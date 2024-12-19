@@ -12,4 +12,10 @@ public interface TagDomainService {
     List<Tag> getTagListFromTagNameList(String[] tagNameList);
 
     List<TagMap> registTagMapList(List<TagMap> tagMapList);
+
+    List<Tag> getRegistedTagList(String[] tagNameList);
+
+    List<Tag> getNotRegistedTagList(String[] tagNameList);
+
+    List<Tag> registTagList(List<Tag> tagList);
 }

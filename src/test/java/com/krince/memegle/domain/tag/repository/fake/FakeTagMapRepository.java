@@ -108,8 +108,8 @@ public class FakeTagMapRepository implements TagMapRepository {
     public <S extends TagMap> S save(S entity) {
         TagMap tagMap = TagMap.builder()
                 .id(++sequence)
-                .tag(entity.getTag())
-                .image(entity.getImage())
+                .tagId(entity.getTagId())
+                .imageId(entity.getImageId())
                 .build();
 
         store.put(sequence, tagMap);

@@ -2,7 +2,6 @@ package com.krince.memegle.domain.image.controller;
 
 import com.krince.memegle.domain.image.dto.ViewImageDto;
 import com.krince.memegle.domain.image.service.ImageApplicationServiceImpl;
-import com.krince.memegle.global.constant.ImageCategory;
 import com.krince.memegle.global.dto.PageableDto;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -127,11 +126,11 @@ class ImageControllerInterTest {
     @Tag("unitTest")
     @Nested
     @DisplayName("카테고리 이미지 리스트 조회")
-    class GetCategoryImages {
+    class GetImageCategoryImages {
 
         @Nested
         @DisplayName("성공")
-        class GetCategoryImagesSuccess {
+        class GetImageCategoryImagesSuccess {
 
             @Test
             @WithMockUser
@@ -142,11 +141,11 @@ class ImageControllerInterTest {
                 PageableDto mockPageableDto = mock(PageableDto.class);
                 ViewImageDto mockViewImageDto = mock(ViewImageDto.class);
                 List<ViewImageDto> viewImageDtos = List.of(mockViewImageDto);
-                when(imageService.getCategoryImages(ImageCategory.MUDO, mockPageableDto)).thenReturn(viewImageDtos);
+                when(imageService.getCategoryImages("MUDO", mockPageableDto)).thenReturn(viewImageDtos);
 
                 //when, then
                 mockMvc.perform(get(uri)
-                                .param("imageCategory", ImageCategory.MUDO.toString())
+                                .param("imageCategory", "MUDO")
                                 .param("page", "1")
                                 .param("size", "10")
                                 .param("criteria", "CREATED_AT")

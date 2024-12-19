@@ -1,8 +1,8 @@
 package com.krince.memegle.domain.image.repository.fake;
 
+import com.krince.memegle.domain.image.dto.ViewImageDto;
 import com.krince.memegle.domain.image.entity.Image;
 import com.krince.memegle.domain.image.repository.ImageRepository;
-import com.krince.memegle.global.constant.ImageCategory;
 import org.springframework.data.domain.*;
 import org.springframework.data.repository.query.FluentQuery;
 
@@ -17,20 +17,6 @@ public class FakeImageRepository implements ImageRepository {
 
     private Map<Long, Image> store = new HashMap<>();
     private Long sequence = 0L;
-
-    @Override
-    public Page<Image> findAllByImageCategory(ImageCategory imageCategory, Pageable pageable) {
-        List<Image> findImages = store.values()
-                .stream()
-                .filter(image -> image.getImageCategory() == imageCategory)
-                .toList();
-
-        int start = (int) pageable.getOffset();
-        int end = Math.min(start + pageable.getPageSize(), findImages.size());
-        List<Image> result = findImages.subList(start, end);
-
-        return new PageImpl<>(result, pageable, findImages.size());
-    }
 
     @Override
     public void flush() {
@@ -117,7 +103,7 @@ public class FakeImageRepository implements ImageRepository {
         Image image = Image.builder()
                 .id(++sequence)
                 .imageUrl(entity.getImageUrl())
-                .imageCategory(entity.getImageCategory())
+                .imageCategoryId(sequence)
                 .registStatus(entity.getRegistStatus())
                 .createdAt(LocalDateTime.now())
                 .modifiedAt(LocalDateTime.now())
@@ -191,5 +177,33 @@ public class FakeImageRepository implements ImageRepository {
     @Override
     public Page<Image> findAll(Pageable pageable) {
         return null;
+    }
+
+    @Override
+    public Optional<ViewImageDto> findViewImageDtoById(Long imageId) {
+        Optional<Image> findImage = store.values()
+                .stream()
+                .filter(image -> image.getId().equals(imageId))
+                .findFirst();
+
+        if (findImage.isPresent()) {
+            Image image = findImage.get();
+            ViewImageDto viewImageDto = ViewImageDto.builder()
+                    .id(image.getId())
+                    .imageUrl(image.getImageUrl())
+                    .imageCategoryValue("MUDO")
+                    .createdAt(image.getCreatedAt())
+                    .modifiedAt(image.getModifiedAt())
+                    .build();
+
+            return Optional.ofNullable(viewImageDto);
+        }
+
+        return Optional.empty();
+    }
+
+    @Override
+    public List<ViewImageDto> findAllViewImageDtoByImageCategory(String imageCategoryValue, Pageable pageable) {
+        return List.of();
     }
 }

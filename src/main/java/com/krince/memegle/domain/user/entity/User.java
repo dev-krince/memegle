@@ -37,7 +37,7 @@ public class User {
     @NotBlank
     private String nickname;
 
-    @Column(nullable = false)
+    @Column(columnDefinition = "varchar(255)", nullable = false)
     @Enumerated(EnumType.STRING)
     @Builder.Default
     private Role role = Role.ROLE_USER;

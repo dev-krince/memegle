@@ -2,7 +2,6 @@ package com.krince.memegle.domain.image.controller;
 
 import com.krince.memegle.domain.image.dto.ImageIdDto;
 import com.krince.memegle.domain.image.dto.ViewImageDto;
-import com.krince.memegle.global.constant.ImageCategory;
 import com.krince.memegle.global.dto.PageableDto;
 import com.krince.memegle.global.response.ResponseCode;
 import com.krince.memegle.global.response.SuccessResponse;
@@ -36,7 +35,7 @@ public abstract class BaseImageController {
     @ApiResponse(description = "존재하지 않는 리소스", responseCode = "40401", ref = "#/components/responses/40401")
     @ApiResponse(description = "알 수 없는 에러", responseCode = "50000", ref = "#/components/responses/50000")
     public abstract ResponseEntity<ResponseCode> registMemeImage(
-            @RequestParam ImageCategory imageCategory,
+            @RequestParam String imageCategory,
             @RequestPart MultipartFile memeImage,
             @RequestPart @NotBlank String tags,
             @RequestPart @NotNull String delimiterFile,
@@ -85,7 +84,7 @@ public abstract class BaseImageController {
     @ApiResponse(description = "올바르지 않은 양식", responseCode = "40001", ref = "#/components/responses/40001")
     @ApiResponse(description = "알 수 없는 에러", responseCode = "50000", ref = "#/components/responses/50000")
     public abstract ResponseEntity<SuccessResponse<List<ViewImageDto>>> getCategoryImages(
-            @RequestParam ImageCategory imageCategory,
+            @RequestParam String imageCategory,
             @ModelAttribute @Valid PageableDto pageableDto,
             @Parameter(hidden = true) @AuthenticationPrincipal CustomUserDetails userDetails
     );

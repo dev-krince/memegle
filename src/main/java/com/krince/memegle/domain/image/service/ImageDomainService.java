@@ -1,15 +1,16 @@
 package com.krince.memegle.domain.image.service;
 
+import com.krince.memegle.domain.image.dto.ViewImageDto;
 import com.krince.memegle.domain.image.entity.Image;
-import com.krince.memegle.global.constant.ImageCategory;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+
+import java.util.List;
 
 public interface ImageDomainService {
 
-    Image getImageFromId(Long imageId);
+    ViewImageDto getViewImageDtoFromId(Long imageId);
 
-    Page<Image> getPageableImagesFromImageCategory(ImageCategory imageCategory, Pageable pageable);
+    List<ViewImageDto> getPageableImagesFromImageCategory(String imageCategory, Pageable pageable);
 
     Image registImage(Image image);
 }
