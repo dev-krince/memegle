@@ -18,4 +18,6 @@ public interface ImageApplicationService {
     String registMemeImage(RegistImageDto registImageDto) throws IOException;
 
     void changeBookmarkState(ImageIdDto imageIdDto, CustomUserDetails userDetails);
+
+    List<ViewImageDto> getBookmarkImages(CustomUserDetails userDetails);
 }

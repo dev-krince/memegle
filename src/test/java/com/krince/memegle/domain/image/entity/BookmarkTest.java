@@ -10,7 +10,6 @@ import static org.assertj.core.api.Assertions.*;
 class BookmarkTest {
 
     @Tag("develop")
-    @Tag("target")
     @Nested
     @DisplayName("북마크 객체 생성")
     class Constructor {
@@ -32,7 +31,6 @@ class BookmarkTest {
     }
 
     @Tag("develop")
-    @Tag("target")
     @Nested
     @DisplayName("즐겨찾기 상태 변경")
     class changeIsBookmark {

@@ -21,4 +21,6 @@ public interface ImageDomainService {
     void registBookmark(Bookmark bookmark);
 
     void validateExistsImage(Long imageId);
+
+    List<ViewImageDto> findAllViewImageDtoByUserIdBookmark(Long userId);
 }

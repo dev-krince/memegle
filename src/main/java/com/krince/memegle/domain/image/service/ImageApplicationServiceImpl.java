@@ -88,4 +88,9 @@ public class ImageApplicationServiceImpl implements ImageApplicationService {
 
         imageDomainService.registBookmark(bookmark);
     }
+
+    @Override
+    public List<ViewImageDto> getBookmarkImages(CustomUserDetails userDetails) {
+        return imageDomainService.findAllViewImageDtoByUserIdBookmark(userDetails.getId());
+    }
 }

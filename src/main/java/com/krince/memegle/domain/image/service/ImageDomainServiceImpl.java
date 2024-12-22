@@ -49,4 +49,9 @@ public class ImageDomainServiceImpl implements ImageDomainService {
     public void validateExistsImage(Long imageId) {
         imageRepository.findById(imageId).orElseThrow(() -> new NoSuchElementException("이미지가 존재하지 않습니다."));
     }
+
+    @Override
+    public List<ViewImageDto> findAllViewImageDtoByUserIdBookmark(Long userId) {
+        return imageRepository.findAllViewImageDtoByUserIdBookmark(userId);
+    }
 }
