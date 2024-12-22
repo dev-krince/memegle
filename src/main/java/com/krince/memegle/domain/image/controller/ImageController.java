@@ -70,7 +70,9 @@ public class ImageController extends BaseImageController {
             @RequestBody @Valid ImageIdDto imageIdDto,
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        throw new UndevelopedApiException();
+        imageApplicationService.changeBookmarkState(imageIdDto, userDetails);
+
+        return ResponseEntity.status(NO_CONTENT.getHttpCode()).build();
     }
 
     @Override

@@ -65,7 +65,7 @@ public abstract class BaseImageController {
     public abstract ResponseEntity<SuccessResponse<ViewImageDto>> getBookmarkImages(@Parameter(hidden = true) @AuthenticationPrincipal CustomUserDetails userDetails);
 
     @PostMapping("/bookmark")
-    @Operation(summary = "이미지 즐겨찾기 추가 및 삭제(미구현 api)", description = "선택한 이미지의 즐겨찾기 상태를 변경합니다.")
+    @Operation(summary = "이미지 즐겨찾기 추가 및 삭제", description = "선택한 이미지의 즐겨찾기 상태를 변경합니다.")
     @ApiResponse(description = "이미지 즐겨찾기 추가 및 삭제 성공", responseCode = "20400", content = @Content)
     @ApiResponse(description = "올바르지 않은 요청", responseCode = "40000", ref = "#/components/responses/40000")
     @ApiResponse(description = "올바르지 않은 양식", responseCode = "40001", ref = "#/components/responses/40001")

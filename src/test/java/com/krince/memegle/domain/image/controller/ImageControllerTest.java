@@ -1,5 +1,7 @@
 package com.krince.memegle.domain.image.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.krince.memegle.domain.image.dto.ImageIdDto;
 import com.krince.memegle.domain.image.dto.ViewImageDto;
 import com.krince.memegle.domain.image.service.ImageApplicationServiceImpl;
 import com.krince.memegle.global.dto.PageableDto;
@@ -25,10 +27,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Tag("test")
 @WebMvcTest(value = ImageController.class)
 @DisplayName("이미지 컨트롤러 테스트(ImageController)")
-class ImageControllerInterTest {
+class ImageControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @MockBean
     private ImageApplicationServiceImpl imageService;
@@ -92,11 +97,13 @@ class ImageControllerInterTest {
     }
 
     @Tag("develop")
+    @Tag("target")
     @Nested
     @DisplayName("이미지 즐겨찾기 추가 및 삭제")
     class ChangeBookmarkState {
 
         @Nested
+        @WithMockUser
         @DisplayName("성공")
         class Success {
 
@@ -105,12 +112,13 @@ class ImageControllerInterTest {
             void success() throws Exception {
                 //given
                 String uri = "/apis/client/images/bookmark";
+                ImageIdDto imageIdDto = ImageIdDto.builder().imageId(1L).build();
 
-                //when
-
-                //then
+                //when, then
                 mockMvc.perform(post(uri)
-                                .contentType(MediaType.APPLICATION_JSON))
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(imageIdDto))
+                                .with(csrf()))
                         .andDo(print())
                         .andExpect(status().isNoContent());
             }
