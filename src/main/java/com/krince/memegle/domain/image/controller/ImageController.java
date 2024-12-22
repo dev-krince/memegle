@@ -101,6 +101,10 @@ public class ImageController extends BaseImageController {
             @ModelAttribute @Valid PageableDto pageableDto,
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        throw new UndevelopedApiException();
+        List<ViewImageDto> findViewImageDtoList = imageApplicationService.getTagImages(tagName, pageableDto);
+        SuccessResponseCode responseCode = OK;
+        SuccessResponse<List<ViewImageDto>> responseBody = new SuccessResponse<>(responseCode, findViewImageDtoList);
+
+        return ResponseEntity.status(responseCode.getHttpCode()).body(responseBody);
     }
 }

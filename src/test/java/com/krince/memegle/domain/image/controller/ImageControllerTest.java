@@ -237,7 +237,9 @@ class ImageControllerTest {
     }
 
     @Tag("develop")
+    @Tag("target")
     @Nested
+    @WithMockUser
     @DisplayName("태그 이미지 리스트 조회")
     class GetTagImages {
 
@@ -249,12 +251,16 @@ class ImageControllerTest {
             void success() throws Exception {
                 //given
                 String uri = "/apis/client/images/tag";
+                when(imageService.getTagImages(any(), any())).thenReturn(List.of(ViewImageDto.builder().build()));
 
-                //when
-
-                //then
+                //when, then
                 mockMvc.perform(get(uri)
-                                .contentType(MediaType.APPLICATION_JSON))
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .param("tagName", "MUDO")
+                                .param("page", "1")
+                                .param("size", "10")
+                                .param("criteria", "CREATED_AT")
+                                .with(csrf()))
                         .andDo(print())
                         .andExpect(status().isOk());
             }

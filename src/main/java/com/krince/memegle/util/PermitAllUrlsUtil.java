@@ -15,6 +15,7 @@ public class PermitAllUrlsUtil {
 
             "/apis/client/images",
             "/apis/client/images/category",
+            "/apis/client/images/tag",
 
             "/apis/client/users/login-id",
 
