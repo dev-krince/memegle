@@ -2,7 +2,9 @@ package com.krince.memegle.domain.image.repository;
 
 import com.krince.memegle.domain.category.entity.QImageCategory;
 import com.krince.memegle.domain.image.dto.ViewImageDto;
+import com.krince.memegle.domain.image.entity.QBookmark;
 import com.krince.memegle.domain.image.entity.QImage;
+import com.krince.memegle.domain.user.entity.QUser;
 import com.querydsl.core.types.ConstructorExpression;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -20,6 +22,8 @@ public class ImageRepositoryImpl implements ImageQueryRepository {
     private final JPAQueryFactory queryFactory;
     private final QImage image = QImage.image;
     private final QImageCategory imageCategory = QImageCategory.imageCategory;
+    private final QUser user = QUser.user;
+    private final QBookmark bookmark = QBookmark.bookmark;
 
     @Override
     public Optional<ViewImageDto> findViewImageDtoById(Long imageId) {
@@ -51,6 +55,21 @@ public class ImageRepositoryImpl implements ImageQueryRepository {
                 .fetch();
     }
 
+    @Override
+    public List<ViewImageDto> findAllViewImageDtoByUserIdBookmark(Long userId) {
+        ConstructorExpression<ViewImageDto> viewImageDto = generateViewImageDtoProjection();
+
+        return queryFactory
+                .select(viewImageDto)
+                .from(image)
+                .innerJoin(imageCategory).on(imageCategory.id.eq(image.imageCategoryId))
+                .innerJoin(bookmark).on(image.id.eq(bookmark.imageId))
+                .innerJoin(user).on(user.id.eq(bookmark.userId))
+                .where(user.id.eq(userId))
+                .where(bookmark.isBookmark.eq(true))
+                .fetch();
+    }
+
     private ConstructorExpression<ViewImageDto> generateViewImageDtoProjection() {
         return Projections.constructor(ViewImageDto.class,
                 image.id,
@@ -59,5 +78,4 @@ public class ImageRepositoryImpl implements ImageQueryRepository {
                 image.createdAt,
                 image.modifiedAt);
     }
-
 }

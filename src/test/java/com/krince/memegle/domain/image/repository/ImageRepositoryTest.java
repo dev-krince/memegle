@@ -3,8 +3,12 @@ package com.krince.memegle.domain.image.repository;
 import com.krince.memegle.domain.category.entity.ImageCategory;
 import com.krince.memegle.domain.category.repository.CategoryRepository;
 import com.krince.memegle.domain.image.dto.ViewImageDto;
+import com.krince.memegle.domain.image.entity.Bookmark;
 import com.krince.memegle.domain.image.entity.Image;
 import com.krince.memegle.domain.image.entity.RegistStatus;
+import com.krince.memegle.domain.user.entity.User;
+import com.krince.memegle.domain.user.repository.UserRepository;
+import com.krince.memegle.global.constant.Role;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -36,6 +40,12 @@ class ImageRepositoryTest {
     @Autowired
     private CategoryRepository categoryRepository;
 
+    @Autowired
+    private BookmarkRepository bookmarkRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
     @BeforeEach
     void setUp() {
         categoryRepository.save(ImageCategory.of("ETC"));
@@ -66,6 +76,65 @@ class ImageRepositoryTest {
 
                 //then
                 assertThat(images.size()).isEqualTo(imageCount);
+            }
+        }
+
+        @Tag("develop")
+        @Nested
+        @DisplayName("회원이 즐겨찾기한 이미지 리스트 조회")
+        class FindAllViewImageDtoByUserIdBookmark {
+
+            @Nested
+            @DisplayName("성공")
+            class Success {
+
+                @Test
+                @DisplayName("즐겨찾기한 개수만금 조회가 된다.")
+                void success() {
+                    //given
+                    User user = User.builder().loginId("testid").password("testPassword").nickname("testNickname").role(Role.ROLE_USER).build();
+                    User saveUser = userRepository.save(user);
+                    Long userId = saveUser.getId();
+
+                    String imageCategory = "MUDO";
+                    int imageCount = 5;
+                    saveImages(imageCount, imageCategory);
+
+                    Bookmark bookmark1 = Bookmark.of(userId, 1L);
+                    Bookmark bookmark2 = Bookmark.of(userId, 2L);
+                    Bookmark bookmark3 = Bookmark.of(userId, 3L);
+                    bookmarkRepository.saveAll(List.of(bookmark1, bookmark2, bookmark3));
+
+                    //when
+                    List<ViewImageDto> findViewImageDtoList = imageRepository.findAllViewImageDtoByUserIdBookmark(userId);
+
+                    //then
+                    assertThat(findViewImageDtoList.size()).isEqualTo(3);
+                }
+
+                @Test
+                @DisplayName("즐겨찾기한 이미지가 없다면 빈 리스트를 반환한다.")
+                void notFoundImage() {
+                    //given
+                    User user = User.builder().loginId("testid").password("testPassword").nickname("testNickname").role(Role.ROLE_USER).build();
+                    User saveUser = userRepository.save(user);
+                    Long userId = saveUser.getId();
+
+                    String imageCategory = "MUDO";
+                    int imageCount = 5;
+                    saveImages(imageCount, imageCategory);
+
+                    //when
+                    List<ViewImageDto> findViewImageDtoList = imageRepository.findAllViewImageDtoByUserIdBookmark(userId);
+
+                    //then
+                    assertThat(findViewImageDtoList.size()).isEqualTo(0);
+                }
+            }
+
+            @Nested
+            @DisplayName("실패")
+            class Fail {
             }
         }
     }
