@@ -106,12 +106,15 @@ class ImageRepositoryTest {
                     Long userId = saveUser.getId();
 
                     String imageCategory = "MUDO";
-                    int imageCount = 5;
-                    saveImages(imageCount, imageCategory);
+                    Long imageCategoryId = categoryRepository.findByImageCategoryValue(imageCategory).orElseThrow().getId();
 
-                    Bookmark bookmark1 = Bookmark.of(userId, 1L);
-                    Bookmark bookmark2 = Bookmark.of(userId, 2L);
-                    Bookmark bookmark3 = Bookmark.of(userId, 3L);
+                    Image savedImage1 = imageRepository.save(Image.of("test1", imageCategoryId));
+                    Image savedImage2 = imageRepository.save(Image.of("test2", imageCategoryId));
+                    Image savedImage3 = imageRepository.save(Image.of("test3", imageCategoryId));
+
+                    Bookmark bookmark1 = Bookmark.of(userId, savedImage1.getId());
+                    Bookmark bookmark2 = Bookmark.of(userId, savedImage2.getId());
+                    Bookmark bookmark3 = Bookmark.of(userId, savedImage3.getId());
                     bookmarkRepository.saveAll(List.of(bookmark1, bookmark2, bookmark3));
 
                     //when
@@ -149,7 +152,6 @@ class ImageRepositoryTest {
     }
 
     @Tag("develop")
-    @Tag("target")
     @Nested
     @DisplayName("태그 이름으로 이미지 조회")
     class FindAllViewImageDtoByTagName {
