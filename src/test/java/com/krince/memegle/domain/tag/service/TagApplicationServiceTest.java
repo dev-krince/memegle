@@ -79,8 +79,8 @@ class TagApplicationServiceTest {
                 Image image = Image.builder().build();
                 Tag tag = Tag.builder().build();
                 TagMap tagMap = TagMap.builder()
-                        .image(image)
-                        .tag(tag)
+                        .imageId(image.getId())
+                        .tagId(tag.getId())
                         .build();
 
                 //when

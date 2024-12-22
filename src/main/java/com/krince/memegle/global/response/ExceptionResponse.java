@@ -7,11 +7,11 @@ import lombok.Getter;
 @Schema(description = "예외 응답 공통 Response")
 public class ExceptionResponse extends GlobalResponse {
 
-    public ExceptionResponse(ResponseCode responseCode) {
+    public ExceptionResponse(ExceptionResponseCode responseCode) {
         super(responseCode);
     }
 
-    public ExceptionResponse(ResponseCode responseCode, String message) {
+    public ExceptionResponse(ExceptionResponseCode responseCode, String message) {
         super(responseCode, message);
     }
 }

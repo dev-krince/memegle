@@ -8,29 +8,31 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
-@Getter
+import static lombok.AccessLevel.*;
+
 @Entity
+@Getter
 @Builder
-@Table(name = "images")
+@Table(name = "bookmarks")
 @EntityListeners(AuditingEntityListener.class)
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
-public class Image {
+@NoArgsConstructor(access = PROTECTED)
+@AllArgsConstructor(access = PROTECTED)
+public class Bookmark {
 
     @Id
     @Column
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false)
-    private String imageUrl;
+    @Column(nullable = false)
+    private Long userId;
 
     @Column(nullable = false)
-    private Long imageCategoryId;
+    private Long imageId;
 
-    @Column(columnDefinition = "varchar(255)", nullable = false)
-    @Enumerated(EnumType.STRING)
-    private RegistStatus registStatus;
+    @Builder.Default
+    @Column(nullable = false)
+    private boolean isBookmark = true;
 
     @Column(nullable = false)
     @CreatedDate
@@ -42,11 +44,14 @@ public class Image {
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime modifiedAt;
 
-    public static Image of(String memeImageUrl, Long imageCategoryId) {
-        return Image.builder()
-                .imageUrl(memeImageUrl)
-                .imageCategoryId(imageCategoryId)
-                .registStatus(RegistStatus.WAITING)
+    public void changeIsBookmark() {
+        this.isBookmark = !this.isBookmark;
+    }
+
+    public static Bookmark of(Long userId, Long imageId) {
+        return Bookmark.builder()
+                .userId(userId)
+                .imageId(imageId)
                 .build();
     }
 }

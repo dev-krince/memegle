@@ -1,6 +1,5 @@
 package com.krince.memegle.domain.category.dto;
 
-import com.krince.memegle.global.constant.ImageCategory;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
@@ -21,7 +20,7 @@ public class CategoryDto {
     private String categoryName;
 
     @Schema(description = "카테고리 코드")
-    private ImageCategory imageCategory;
+    private String imageCategoryValue;
 
     @Schema(description = "대표 이미지 url")
     private String titleImageUrl;
