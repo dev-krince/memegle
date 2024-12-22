@@ -88,7 +88,6 @@ class ImageRepositoryTest {
             }
         }
 
-        @Tag("develop")
         @Nested
         @DisplayName("회원이 즐겨찾기한 이미지 리스트 조회")
         class FindAllViewImageDtoByUserIdBookmark {
@@ -151,7 +150,6 @@ class ImageRepositoryTest {
         }
     }
 
-    @Tag("develop")
     @Nested
     @DisplayName("태그 이름으로 이미지 조회")
     class FindAllViewImageDtoByTagName {

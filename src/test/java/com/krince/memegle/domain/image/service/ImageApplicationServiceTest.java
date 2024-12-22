@@ -194,7 +194,6 @@ class ImageApplicationServiceTest {
         }
     }
 
-    @Tag("develop")
     @Nested
     @DisplayName("즐겨찾기 상태 변경")
     class ChangeBookmarkState {

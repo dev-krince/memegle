@@ -66,7 +66,6 @@ class ImageControllerTest {
         }
     }
 
-    @Tag("develop")
     @Nested
     @WithMockUser
     @DisplayName("즐겨찾기 이미지 리스트 조회")
@@ -99,7 +98,6 @@ class ImageControllerTest {
         }
     }
 
-    @Tag("develop")
     @Nested
     @DisplayName("이미지 즐겨찾기 추가 및 삭제")
     class ChangeBookmarkState {
@@ -236,8 +234,6 @@ class ImageControllerTest {
         }
     }
 
-    @Tag("develop")
-    @Tag("target")
     @Nested
     @WithMockUser
     @DisplayName("태그 이미지 리스트 조회")
