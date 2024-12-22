@@ -211,4 +211,9 @@ public class FakeImageRepository implements ImageRepository {
     public List<ViewImageDto> findAllViewImageDtoByUserIdBookmark(Long userId) {
         return List.of();
     }
+
+    @Override
+    public List<ViewImageDto> findAllViewImageDtoByTagName(String tagName, Pageable pageable) {
+        return List.of();
+    }
 }

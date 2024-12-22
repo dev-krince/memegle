@@ -6,6 +6,9 @@ import com.krince.memegle.domain.image.dto.ViewImageDto;
 import com.krince.memegle.domain.image.entity.Bookmark;
 import com.krince.memegle.domain.image.entity.Image;
 import com.krince.memegle.domain.image.entity.RegistStatus;
+import com.krince.memegle.domain.tag.entity.TagMap;
+import com.krince.memegle.domain.tag.repository.TagMapRepository;
+import com.krince.memegle.domain.tag.repository.TagRepository;
 import com.krince.memegle.domain.user.entity.User;
 import com.krince.memegle.domain.user.repository.UserRepository;
 import com.krince.memegle.global.constant.Role;
@@ -45,6 +48,12 @@ class ImageRepositoryTest {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private TagRepository tagRepository;
+
+    @Autowired
+    private TagMapRepository tagMapRepository;
 
     @BeforeEach
     void setUp() {
@@ -136,6 +145,77 @@ class ImageRepositoryTest {
             @DisplayName("실패")
             class Fail {
             }
+        }
+    }
+
+    @Tag("develop")
+    @Tag("target")
+    @Nested
+    @DisplayName("태그 이름으로 이미지 조회")
+    class FindAllViewImageDtoByTagName {
+
+        @Nested
+        @DisplayName("성공")
+        class Success {
+
+            @Test
+            @DisplayName("테그 이름이 존재하면 pageable 설정대로 반환한다.")
+            void success() {
+                //given
+                String imageCategory = "MUDO";
+                int imageCount = 5;
+                saveImages(imageCount, imageCategory);
+
+                com.krince.memegle.domain.tag.entity.Tag tag1 = com.krince.memegle.domain.tag.entity.Tag.of("테스트1");
+                com.krince.memegle.domain.tag.entity.Tag tag2 = com.krince.memegle.domain.tag.entity.Tag.of("테스트2");
+                com.krince.memegle.domain.tag.entity.Tag savedTag1 = tagRepository.save(tag1);
+                com.krince.memegle.domain.tag.entity.Tag savedTag2 = tagRepository.save(tag2);
+
+                TagMap tagMap1 = TagMap.builder().imageId(1L).tagId(savedTag1.getId()).build();
+                TagMap tagMap2 = TagMap.builder().imageId(2L).tagId(savedTag1.getId()).build();
+                TagMap tagMap3 = TagMap.builder().imageId(3L).tagId(savedTag1.getId()).build();
+                TagMap tagMap4 = TagMap.builder().imageId(4L).tagId(savedTag1.getId()).build();
+                TagMap tagMap5 = TagMap.builder().imageId(5L).tagId(savedTag2.getId()).build();
+                tagMapRepository.saveAll(List.of(tagMap1, tagMap2, tagMap3, tagMap4, tagMap5));
+
+                //when
+                List<ViewImageDto> findViewImageDtoList = imageRepository.findAllViewImageDtoByTagName("테스트1", PageRequest.of(0, 10, Sort.by("createdAt").descending()));
+
+                //then
+                assertThat(findViewImageDtoList.size()).isEqualTo(4);
+            }
+
+            @Test
+            @DisplayName("테그 이름이 존재하지 않으면 빈 List 를 반환한다.")
+            void notFoundImage() {
+                //given
+                String imageCategory = "MUDO";
+                int imageCount = 5;
+                saveImages(imageCount, imageCategory);
+
+                com.krince.memegle.domain.tag.entity.Tag tag1 = com.krince.memegle.domain.tag.entity.Tag.of("테스트1");
+                com.krince.memegle.domain.tag.entity.Tag tag2 = com.krince.memegle.domain.tag.entity.Tag.of("테스트2");
+                com.krince.memegle.domain.tag.entity.Tag savedTag1 = tagRepository.save(tag1);
+                com.krince.memegle.domain.tag.entity.Tag savedTag2 = tagRepository.save(tag2);
+
+                TagMap tagMap1 = TagMap.builder().imageId(1L).tagId(savedTag1.getId()).build();
+                TagMap tagMap2 = TagMap.builder().imageId(2L).tagId(savedTag1.getId()).build();
+                TagMap tagMap3 = TagMap.builder().imageId(3L).tagId(savedTag1.getId()).build();
+                TagMap tagMap4 = TagMap.builder().imageId(4L).tagId(savedTag1.getId()).build();
+                TagMap tagMap5 = TagMap.builder().imageId(5L).tagId(savedTag2.getId()).build();
+                tagMapRepository.saveAll(List.of(tagMap1, tagMap2, tagMap3, tagMap4, tagMap5));
+
+                //when
+                List<ViewImageDto> findViewImageDtoList = imageRepository.findAllViewImageDtoByTagName("테스트3", PageRequest.of(0, 10, Sort.by("createdAt").descending()));
+
+                //then
+                assertThat(findViewImageDtoList.size()).isEqualTo(0);
+            }
+        }
+
+        @Nested
+        @DisplayName("실패")
+        class Fail {
         }
     }
 

@@ -15,4 +15,6 @@ public interface ImageQueryRepository {
     List<ViewImageDto> findAllViewImageDtoByImageCategory(String imageCategoryValue, Pageable pageable);
 
     List<ViewImageDto> findAllViewImageDtoByUserIdBookmark(Long userId);
+
+    List<ViewImageDto> findAllViewImageDtoByTagName(String tagName, Pageable pageable);
 }
