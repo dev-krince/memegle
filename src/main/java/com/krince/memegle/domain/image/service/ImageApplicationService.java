@@ -20,4 +20,6 @@ public interface ImageApplicationService {
     void changeBookmarkState(ImageIdDto imageIdDto, CustomUserDetails userDetails);
 
     List<ViewImageDto> getBookmarkImages(CustomUserDetails userDetails);
+
+    List<ViewImageDto> getTagImages(String tagName, PageableDto pageableDto);
 }

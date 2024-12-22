@@ -54,4 +54,9 @@ public class ImageDomainServiceImpl implements ImageDomainService {
     public List<ViewImageDto> findAllViewImageDtoByUserIdBookmark(Long userId) {
         return imageRepository.findAllViewImageDtoByUserIdBookmark(userId);
     }
+
+    @Override
+    public List<ViewImageDto> findAllViewImageDtoByTagName(String tagName, Pageable pageable) {
+        return imageRepository.findAllViewImageDtoByTagName(tagName, pageable);
+    }
 }

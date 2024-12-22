@@ -93,4 +93,11 @@ public class ImageApplicationServiceImpl implements ImageApplicationService {
     public List<ViewImageDto> getBookmarkImages(CustomUserDetails userDetails) {
         return imageDomainService.findAllViewImageDtoByUserIdBookmark(userDetails.getId());
     }
+
+    @Override
+    public List<ViewImageDto> getTagImages(String tagName, PageableDto pageableDto) {
+        Pageable pageable = PageUtil.createSortedPageable(pageableDto);
+
+        return imageDomainService.getPageableImagesFromImageCategory(tagName, pageable);
+    }
 }

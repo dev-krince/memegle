@@ -23,4 +23,6 @@ public interface ImageDomainService {
     void validateExistsImage(Long imageId);
 
     List<ViewImageDto> findAllViewImageDtoByUserIdBookmark(Long userId);
+
+    List<ViewImageDto> findAllViewImageDtoByTagName(String tagName, Pageable pageable);
 }
