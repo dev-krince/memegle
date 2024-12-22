@@ -1,7 +1,5 @@
 package com.krince.memegle.domain.image.dto;
 
-import com.krince.memegle.domain.image.entity.Image;
-import com.krince.memegle.global.constant.ImageCategory;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
@@ -10,7 +8,7 @@ import java.time.LocalDateTime;
 @Getter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PUBLIC)
 public class ViewImageDto {
 
     @Schema(title = "밈 이미지 고유번호", description = "밈 이미지 고유번호", example = "1")
@@ -20,21 +18,11 @@ public class ViewImageDto {
     private String imageUrl;
 
     @Schema(title = "밈 이미지 카테고리", description = "밈 이미지 카테고리", example = "MUDO")
-    private ImageCategory imageCategory;
+    private String imageCategoryValue;
 
     @Schema(title = "밈 이미지 생성 일시", description = "밈 이미지 생성 일시", example = "2024-05-19T01:24:05.543105")
     private LocalDateTime createdAt;
 
     @Schema(title = "밈 이미지 수정 일시", description = "밈 이미지 수정 일시", example = "2024-05-19T01:24:05.543105")
     private LocalDateTime modifiedAt;
-
-    public static ViewImageDto of(Image image) {
-        return ViewImageDto.builder()
-                .id(image.getId())
-                .imageUrl(image.getImageUrl())
-                .imageCategory(image.getImageCategory())
-                .createdAt(image.getCreatedAt())
-                .modifiedAt(image.getModifiedAt())
-                .build();
-    }
 }

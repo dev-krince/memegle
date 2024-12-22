@@ -19,18 +19,16 @@ public class TagMap {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "tag_id", nullable = false)
-    private Tag tag;
+    @Column(nullable = false)
+    private Long tagId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "image_id", nullable = false)
-    private Image image;
+    @Column(nullable = false)
+    private Long imageId;
 
     public static TagMap of(Tag tag, Image image) {
         return TagMap.builder()
-                .image(image)
-                .tag(tag)
+                .imageId(image.getId())
+                .tagId(tag.getId())
                 .build();
     }
 }

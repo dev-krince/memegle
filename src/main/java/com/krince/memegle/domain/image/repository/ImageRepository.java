@@ -1,14 +1,14 @@
 package com.krince.memegle.domain.image.repository;
 
 import com.krince.memegle.domain.image.entity.Image;
-import com.krince.memegle.global.constant.ImageCategory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-@Repository
-public interface ImageRepository extends JpaRepository<Image, Long> {
+import java.time.LocalDateTime;
+import java.util.List;
 
-    Page<Image> findAllByImageCategory(ImageCategory imageCategory, Pageable pageable);
+@Repository
+public interface ImageRepository extends JpaRepository<Image, Long>, ImageQueryRepository {
 }

@@ -4,7 +4,6 @@ import com.krince.memegle.domain.image.dto.ImageIdDto;
 import com.krince.memegle.domain.image.dto.RegistImageDto;
 import com.krince.memegle.domain.image.dto.ViewImageDto;
 import com.krince.memegle.domain.image.service.ImageApplicationService;
-import com.krince.memegle.global.constant.ImageCategory;
 import com.krince.memegle.global.dto.PageableDto;
 import com.krince.memegle.global.exception.UndevelopedApiException;
 import com.krince.memegle.global.response.ResponseCode;
@@ -36,29 +35,22 @@ public class ImageController extends BaseImageController {
     @Override
     @PostMapping(consumes = MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ResponseCode> registMemeImage(
-            @RequestParam ImageCategory imageCategory,
+            @RequestParam String imageCategory,
             @RequestPart MultipartFile memeImageFile,
             @RequestPart @NotBlank String tags,
             @RequestPart @NotNull String delimiter,
             CustomUserDetails userDetails
     ) throws IOException {
-        RegistImageDto registImageDto = RegistImageDto.builder()
-                .imageCategory(imageCategory)
-                .memeImageFile(memeImageFile)
-                .tags(tags)
-                .delimiter(delimiter)
-                .build();
+        RegistImageDto registImageDto = RegistImageDto.of(memeImageFile, imageCategory, tags, delimiter);
 
         imageApplicationService.registMemeImage(registImageDto);
 
-        return ResponseEntity
-                .status(NO_CONTENT.getHttpCode())
-                .build();
+        return ResponseEntity.status(NO_CONTENT.getHttpCode()).build();
     }
 
     @Override
-    @GetMapping("/{imageId}")
-    public ResponseEntity<SuccessResponse<ViewImageDto>> getImage(@PathVariable Long imageId, @AuthenticationPrincipal CustomUserDetails userDetails) {
+    @GetMapping
+    public ResponseEntity<SuccessResponse<ViewImageDto>> getImage(@RequestParam Long imageId, @AuthenticationPrincipal CustomUserDetails userDetails) {
         ViewImageDto viewImageDto = imageApplicationService.getImage(imageId);
         SuccessResponseCode responseCode = OK;
         SuccessResponse<ViewImageDto> responseBody = new SuccessResponse<>(responseCode, viewImageDto);
@@ -68,8 +60,13 @@ public class ImageController extends BaseImageController {
 
     @Override
     @GetMapping("/bookmark")
-    public ResponseEntity<SuccessResponse<ViewImageDto>> getBookmarkImages(@AuthenticationPrincipal CustomUserDetails userDetails) {
-        throw new UndevelopedApiException();
+    public ResponseEntity<SuccessResponse<List<ViewImageDto>>> getBookmarkImages(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        List<ViewImageDto> viewImageDtoList = imageApplicationService.getBookmarkImages(userDetails);
+        SuccessResponseCode responseCode = OK;
+
+        SuccessResponse<List<ViewImageDto>> responseBody = new SuccessResponse<>(responseCode, viewImageDtoList);
+
+        return ResponseEntity.status(responseCode.getHttpCode()).body(responseBody);
     }
 
     @Override
@@ -78,13 +75,15 @@ public class ImageController extends BaseImageController {
             @RequestBody @Valid ImageIdDto imageIdDto,
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        throw new UndevelopedApiException();
+        imageApplicationService.changeBookmarkState(imageIdDto, userDetails);
+
+        return ResponseEntity.status(NO_CONTENT.getHttpCode()).build();
     }
 
     @Override
     @GetMapping("/category")
     public ResponseEntity<SuccessResponse<List<ViewImageDto>>> getCategoryImages(
-            @RequestParam ImageCategory imageCategory,
+            @RequestParam String imageCategory,
             @ModelAttribute @Valid PageableDto pageableDto,
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
@@ -102,6 +101,10 @@ public class ImageController extends BaseImageController {
             @ModelAttribute @Valid PageableDto pageableDto,
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        throw new UndevelopedApiException();
+        List<ViewImageDto> findViewImageDtoList = imageApplicationService.getTagImages(tagName, pageableDto);
+        SuccessResponseCode responseCode = OK;
+        SuccessResponse<List<ViewImageDto>> responseBody = new SuccessResponse<>(responseCode, findViewImageDtoList);
+
+        return ResponseEntity.status(responseCode.getHttpCode()).body(responseBody);
     }
 }

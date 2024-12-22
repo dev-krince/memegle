@@ -7,9 +7,8 @@ import com.krince.memegle.domain.tag.repository.TagRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -29,5 +28,35 @@ public class TagDomainServiceImpl implements TagDomainService {
     @Override
     public List<TagMap> registTagMapList(List<TagMap> tagMapList) {
         return tagMapRepository.saveAll(tagMapList);
+    }
+
+    @Override
+    public List<Tag> getRegistedTagList(String[] tagNameList) {
+        return Arrays.stream(tagNameList)
+                .map(tagRepository::findByTagName)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Tag> getNotRegistedTagList(String[] tagNameList) {
+        List<Tag> notRegistedTagList = new ArrayList<>();
+
+        for (String tagName : tagNameList) {
+            boolean isNotRegistTagName = tagRepository.findByTagName(tagName).isEmpty();
+
+            if (isNotRegistTagName) {
+                Tag notRegistTag = Tag.of(tagName);
+                notRegistedTagList.add(notRegistTag);
+            }
+        }
+
+        return notRegistedTagList;
+    }
+
+    @Override
+    public List<Tag> registTagList(List<Tag> notRegistedTagList) {
+        return tagRepository.saveAll(notRegistedTagList);
     }
 }

@@ -1,4 +1,4 @@
-package com.krince.memegle.domain.image.entity;
+package com.krince.memegle.domain.category.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -8,14 +8,16 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
+import static lombok.AccessLevel.*;
+
 @Getter
 @Entity
 @Builder
-@Table(name = "images")
+@Table(name = "categories")
 @EntityListeners(AuditingEntityListener.class)
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
-public class Image {
+@NoArgsConstructor(access = PROTECTED)
+@AllArgsConstructor(access = PROTECTED)
+public class ImageCategory {
 
     @Id
     @Column
@@ -23,14 +25,7 @@ public class Image {
     private Long id;
 
     @Column(unique = true, nullable = false)
-    private String imageUrl;
-
-    @Column(nullable = false)
-    private Long imageCategoryId;
-
-    @Column(columnDefinition = "varchar(255)", nullable = false)
-    @Enumerated(EnumType.STRING)
-    private RegistStatus registStatus;
+    private String imageCategoryValue;
 
     @Column(nullable = false)
     @CreatedDate
@@ -42,11 +37,9 @@ public class Image {
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime modifiedAt;
 
-    public static Image of(String memeImageUrl, Long imageCategoryId) {
-        return Image.builder()
-                .imageUrl(memeImageUrl)
-                .imageCategoryId(imageCategoryId)
-                .registStatus(RegistStatus.WAITING)
+    public static ImageCategory of(String imageCategoryValue) {
+        return ImageCategory.builder()
+                .imageCategoryValue(imageCategoryValue)
                 .build();
     }
 }
