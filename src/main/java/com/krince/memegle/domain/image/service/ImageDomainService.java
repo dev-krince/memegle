@@ -24,5 +24,5 @@ public interface ImageDomainService {
 
     List<ViewImageDto> findAllViewImageDtoByUserIdBookmark(Long userId);
 
-    List<ViewImageDto> findAllViewImageDtoByTagName(String tagName, Pageable pageable);
+    List<ViewImageDto> findPageViewImageDtoByTagName(String tagName, Pageable pageable);
 }

@@ -98,6 +98,6 @@ public class ImageApplicationServiceImpl implements ImageApplicationService {
     public List<ViewImageDto> getTagImages(String tagName, PageableDto pageableDto) {
         Pageable pageable = PageUtil.createSortedPageable(pageableDto);
 
-        return imageDomainService.getPageableImagesFromImageCategory(tagName, pageable);
+        return imageDomainService.findPageViewImageDtoByTagName(tagName, pageable);
     }
 }

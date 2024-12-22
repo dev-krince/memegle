@@ -90,7 +90,7 @@ public abstract class BaseImageController {
     );
 
     @GetMapping("/tag")
-    @Operation(summary = "태그 이미지 리스트 조회(미구현 api)", description = "선택한 태그의 이미지 리스트를 조회합니다.")
+    @Operation(summary = "태그 이미지 리스트 조회", description = "선택한 태그의 이미지 리스트를 조회합니다.")
     @ApiResponse(description = "태그 이미지 리스트 조회 성공", responseCode = "20000")
     @ApiResponse(description = "올바르지 않은 요청", responseCode = "40000", ref = "#/components/responses/40000")
     @ApiResponse(description = "올바르지 않은 양식", responseCode = "40001", ref = "#/components/responses/40001")

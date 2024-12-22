@@ -56,7 +56,7 @@ public class ImageDomainServiceImpl implements ImageDomainService {
     }
 
     @Override
-    public List<ViewImageDto> findAllViewImageDtoByTagName(String tagName, Pageable pageable) {
+    public List<ViewImageDto> findPageViewImageDtoByTagName(String tagName, Pageable pageable) {
         return imageRepository.findAllViewImageDtoByTagName(tagName, pageable);
     }
 }
