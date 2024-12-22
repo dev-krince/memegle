@@ -13,7 +13,7 @@ public class PermitAllUrlsUtil {
     public static List<String> permitAllGetUrls = List.of(
             "/apis/client/categories",
 
-            "/apis/client/images/{imageId}",
+            "/apis/client/images",
             "/apis/client/images/category",
 
             "/apis/client/users/login-id",

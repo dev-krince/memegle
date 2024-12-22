@@ -49,8 +49,8 @@ public class ImageController extends BaseImageController {
     }
 
     @Override
-    @GetMapping("/{imageId}")
-    public ResponseEntity<SuccessResponse<ViewImageDto>> getImage(@PathVariable Long imageId, @AuthenticationPrincipal CustomUserDetails userDetails) {
+    @GetMapping
+    public ResponseEntity<SuccessResponse<ViewImageDto>> getImage(@RequestParam Long imageId, @AuthenticationPrincipal CustomUserDetails userDetails) {
         ViewImageDto viewImageDto = imageApplicationService.getImage(imageId);
         SuccessResponseCode responseCode = OK;
         SuccessResponse<ViewImageDto> responseBody = new SuccessResponse<>(responseCode, viewImageDto);
@@ -60,8 +60,13 @@ public class ImageController extends BaseImageController {
 
     @Override
     @GetMapping("/bookmark")
-    public ResponseEntity<SuccessResponse<ViewImageDto>> getBookmarkImages(@AuthenticationPrincipal CustomUserDetails userDetails) {
-        throw new UndevelopedApiException();
+    public ResponseEntity<SuccessResponse<List<ViewImageDto>>> getBookmarkImages(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        List<ViewImageDto> viewImageDtoList = imageApplicationService.getBookmarkImages(userDetails);
+        SuccessResponseCode responseCode = OK;
+
+        SuccessResponse<List<ViewImageDto>> responseBody = new SuccessResponse<>(responseCode, viewImageDtoList);
+
+        return ResponseEntity.status(responseCode.getHttpCode()).body(responseBody);
     }
 
     @Override

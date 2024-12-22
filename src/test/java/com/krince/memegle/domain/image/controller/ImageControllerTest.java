@@ -52,13 +52,14 @@ class ImageControllerTest {
             @DisplayName("success")
             void getImage() throws Exception {
                 //given
-                String uri = "/apis/client/images/1";
+                String uri = "/apis/client/images";
                 ViewImageDto mockViewImageDto = mock(ViewImageDto.class);
                 when(imageService.getImage(any())).thenReturn(mockViewImageDto);
 
                 //when, then
                 mockMvc.perform(get(uri)
-                                .with(csrf()))
+                                .with(csrf())
+                                .param("imageId", "1"))
                         .andExpect(status().isOk())
                         .andDo(print());
             }
@@ -67,6 +68,7 @@ class ImageControllerTest {
 
     @Tag("develop")
     @Nested
+    @WithMockUser
     @DisplayName("즐겨찾기 이미지 리스트 조회")
     class GetBookmarkImages {
 
@@ -78,12 +80,13 @@ class ImageControllerTest {
             void success() throws Exception {
                 //given
                 String uri = "/apis/client/images/bookmark";
+                List<ViewImageDto> viewImageDtoList = List.of(ViewImageDto.builder().build());
+                when(imageService.getBookmarkImages(any())).thenReturn(viewImageDtoList);
 
-                //when
-
-                //then
+                //when, then
                 mockMvc.perform(get(uri)
-                                .contentType(MediaType.APPLICATION_JSON))
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .with(csrf()))
                         .andDo(print())
                         .andExpect(status().isOk());
             }
@@ -97,7 +100,6 @@ class ImageControllerTest {
     }
 
     @Tag("develop")
-    @Tag("target")
     @Nested
     @DisplayName("이미지 즐겨찾기 추가 및 삭제")
     class ChangeBookmarkState {
