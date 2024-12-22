@@ -1,8 +1,9 @@
 package com.krince.memegle.domain.image.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.krince.memegle.domain.image.dto.ImageIdDto;
 import com.krince.memegle.domain.image.dto.ViewImageDto;
 import com.krince.memegle.domain.image.service.ImageApplicationServiceImpl;
-import com.krince.memegle.global.constant.ImageCategory;
 import com.krince.memegle.global.dto.PageableDto;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,10 +27,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Tag("test")
 @WebMvcTest(value = ImageController.class)
 @DisplayName("이미지 컨트롤러 테스트(ImageController)")
-class ImageControllerInterTest {
+class ImageControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @MockBean
     private ImageApplicationServiceImpl imageService;
@@ -48,21 +52,22 @@ class ImageControllerInterTest {
             @DisplayName("success")
             void getImage() throws Exception {
                 //given
-                String uri = "/apis/client/images/1";
+                String uri = "/apis/client/images";
                 ViewImageDto mockViewImageDto = mock(ViewImageDto.class);
                 when(imageService.getImage(any())).thenReturn(mockViewImageDto);
 
                 //when, then
                 mockMvc.perform(get(uri)
-                                .with(csrf()))
+                                .with(csrf())
+                                .param("imageId", "1"))
                         .andExpect(status().isOk())
                         .andDo(print());
             }
         }
     }
 
-    @Tag("develop")
     @Nested
+    @WithMockUser
     @DisplayName("즐겨찾기 이미지 리스트 조회")
     class GetBookmarkImages {
 
@@ -74,12 +79,13 @@ class ImageControllerInterTest {
             void success() throws Exception {
                 //given
                 String uri = "/apis/client/images/bookmark";
+                List<ViewImageDto> viewImageDtoList = List.of(ViewImageDto.builder().build());
+                when(imageService.getBookmarkImages(any())).thenReturn(viewImageDtoList);
 
-                //when
-
-                //then
+                //when, then
                 mockMvc.perform(get(uri)
-                                .contentType(MediaType.APPLICATION_JSON))
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .with(csrf()))
                         .andDo(print())
                         .andExpect(status().isOk());
             }
@@ -92,12 +98,12 @@ class ImageControllerInterTest {
         }
     }
 
-    @Tag("develop")
     @Nested
     @DisplayName("이미지 즐겨찾기 추가 및 삭제")
     class ChangeBookmarkState {
 
         @Nested
+        @WithMockUser
         @DisplayName("성공")
         class Success {
 
@@ -106,12 +112,13 @@ class ImageControllerInterTest {
             void success() throws Exception {
                 //given
                 String uri = "/apis/client/images/bookmark";
+                ImageIdDto imageIdDto = ImageIdDto.builder().imageId(1L).build();
 
-                //when
-
-                //then
+                //when, then
                 mockMvc.perform(post(uri)
-                                .contentType(MediaType.APPLICATION_JSON))
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(imageIdDto))
+                                .with(csrf()))
                         .andDo(print())
                         .andExpect(status().isNoContent());
             }
@@ -127,11 +134,11 @@ class ImageControllerInterTest {
     @Tag("unitTest")
     @Nested
     @DisplayName("카테고리 이미지 리스트 조회")
-    class GetCategoryImages {
+    class GetImageCategoryImages {
 
         @Nested
         @DisplayName("성공")
-        class GetCategoryImagesSuccess {
+        class GetImageCategoryImagesSuccess {
 
             @Test
             @WithMockUser
@@ -142,11 +149,11 @@ class ImageControllerInterTest {
                 PageableDto mockPageableDto = mock(PageableDto.class);
                 ViewImageDto mockViewImageDto = mock(ViewImageDto.class);
                 List<ViewImageDto> viewImageDtos = List.of(mockViewImageDto);
-                when(imageService.getCategoryImages(ImageCategory.MUDO, mockPageableDto)).thenReturn(viewImageDtos);
+                when(imageService.getCategoryImages("MUDO", mockPageableDto)).thenReturn(viewImageDtos);
 
                 //when, then
                 mockMvc.perform(get(uri)
-                                .param("imageCategory", ImageCategory.MUDO.toString())
+                                .param("imageCategory", "MUDO")
                                 .param("page", "1")
                                 .param("size", "10")
                                 .param("criteria", "CREATED_AT")
@@ -227,8 +234,8 @@ class ImageControllerInterTest {
         }
     }
 
-    @Tag("develop")
     @Nested
+    @WithMockUser
     @DisplayName("태그 이미지 리스트 조회")
     class GetTagImages {
 
@@ -240,12 +247,16 @@ class ImageControllerInterTest {
             void success() throws Exception {
                 //given
                 String uri = "/apis/client/images/tag";
+                when(imageService.getTagImages(any(), any())).thenReturn(List.of(ViewImageDto.builder().build()));
 
-                //when
-
-                //then
+                //when, then
                 mockMvc.perform(get(uri)
-                                .contentType(MediaType.APPLICATION_JSON))
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .param("tagName", "MUDO")
+                                .param("page", "1")
+                                .param("size", "10")
+                                .param("criteria", "CREATED_AT")
+                                .with(csrf()))
                         .andDo(print())
                         .andExpect(status().isOk());
             }

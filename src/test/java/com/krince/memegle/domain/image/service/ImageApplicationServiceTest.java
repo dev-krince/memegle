@@ -1,8 +1,16 @@
 package com.krince.memegle.domain.image.service;
 
+import com.krince.memegle.domain.category.entity.ImageCategory;
+import com.krince.memegle.domain.category.repository.CategoryRepository;
+import com.krince.memegle.domain.category.repository.fake.FakeCategoryRepository;
+import com.krince.memegle.domain.category.service.CategoryDomainService;
+import com.krince.memegle.domain.category.service.CategoryDomainServiceImpl;
+import com.krince.memegle.domain.image.dto.ImageIdDto;
 import com.krince.memegle.domain.image.dto.RegistImageDto;
 import com.krince.memegle.domain.image.dto.ViewImageDto;
 import com.krince.memegle.domain.image.entity.Image;
+import com.krince.memegle.domain.image.repository.BookmarkRepository;
+import com.krince.memegle.domain.image.repository.fake.FakeBookmarkRepository;
 import com.krince.memegle.domain.image.repository.fake.FakeImageRepository;
 import com.krince.memegle.domain.image.repository.ImageRepository;
 import com.krince.memegle.domain.tag.repository.fake.FakeTagMapRepository;
@@ -15,8 +23,9 @@ import com.krince.memegle.global.aws.fake.FakeAmazonS3;
 import com.krince.memegle.global.aws.fake.FakeS3Service;
 import com.krince.memegle.global.aws.S3Service;
 import com.krince.memegle.global.constant.Criteria;
-import com.krince.memegle.global.constant.ImageCategory;
+import com.krince.memegle.global.constant.Role;
 import com.krince.memegle.global.dto.PageableDto;
+import com.krince.memegle.global.security.CustomUserDetails;
 import org.junit.jupiter.api.*;
 import org.springframework.mock.web.MockMultipartFile;
 
@@ -37,9 +46,12 @@ class ImageApplicationServiceTest {
     static ImageRepository imageRepository;
     static TagRepository tagRepository;
     static TagMapRepository tagMapRepository;
+    static CategoryRepository categoryRepository;
+    static BookmarkRepository bookmarkRepository;
 
     static ImageDomainService imageDomainService;
     static TagDomainService tagDomainService;
+    static CategoryDomainService categoryDomainService;
 
     static S3Service s3Service;
 
@@ -48,13 +60,16 @@ class ImageApplicationServiceTest {
         imageRepository = new FakeImageRepository();
         tagRepository = new FakeTagRepository();
         tagMapRepository = new FakeTagMapRepository();
+        categoryRepository = new FakeCategoryRepository();
+        bookmarkRepository = new FakeBookmarkRepository();
 
-        imageDomainService = new ImageDomainServiceImpl(imageRepository);
+        imageDomainService = new ImageDomainServiceImpl(imageRepository, bookmarkRepository);
         tagDomainService = new TagDomainServiceImpl(tagRepository, tagMapRepository);
+        categoryDomainService = new CategoryDomainServiceImpl(categoryRepository);
 
         s3Service = new FakeS3Service(new FakeAmazonS3(), "testBucket", "testRegion");
 
-        imageApplicationService = new ImageApplicationServiceImpl(imageDomainService, tagDomainService, s3Service);
+        imageApplicationService = new ImageApplicationServiceImpl(imageDomainService, tagDomainService, categoryDomainService, s3Service);
     }
 
     @AfterEach
@@ -109,11 +124,11 @@ class ImageApplicationServiceTest {
 
     @Nested
     @DisplayName("카테고리 이미지 리스트 조회")
-    class GetCategoryImages {
+    class GetImageCategoryImages {
 
         @Nested
         @DisplayName("성공")
-        class GetCategoryImagesSuccess {
+        class GetImageCategoryImagesSuccess {
 
             @Test
             @DisplayName("success")
@@ -126,7 +141,7 @@ class ImageApplicationServiceTest {
                         .build();
 
                 //when
-                List<ViewImageDto> images = imageApplicationService.getCategoryImages(ImageCategory.MUDO, pageableDto);
+                List<ViewImageDto> images = imageApplicationService.getCategoryImages("MUDO", pageableDto);
 
                 //then
                 assertThat(images.size()).isEqualTo(0);
@@ -160,8 +175,12 @@ class ImageApplicationServiceTest {
                         "image/png",
                         "imageContent".getBytes()
                 );
+
+                categoryRepository.save(ImageCategory.of("MUDO"));
+
                 RegistImageDto registImageDto = RegistImageDto.builder()
                         .memeImageFile(mockFile)
+                        .imageCategoryValue("MUDO")
                         .tags("test1 test2")
                         .delimiter(" ")
                         .build();
@@ -171,6 +190,48 @@ class ImageApplicationServiceTest {
 
                 //then
                 assertThat(imageURL).isEqualTo("https://testImage.com");
+            }
+        }
+    }
+
+    @Nested
+    @DisplayName("즐겨찾기 상태 변경")
+    class ChangeBookmarkState {
+
+        @Nested
+        @DisplayName("성공")
+        class Success {
+
+            @Test
+            @DisplayName("success")
+            void success() {
+                //given
+                Image image = Image.of("https://www.test.com", 1L);
+                imageRepository.save(image);
+                CustomUserDetails userDetails = new CustomUserDetails(1L, Role.ROLE_USER);
+                ImageIdDto imageIdDto = ImageIdDto.builder().imageId(1L).build();
+
+                //when
+                imageApplicationService.changeBookmarkState(imageIdDto, userDetails);
+
+                //then
+                assertDoesNotThrow(() -> imageApplicationService.changeBookmarkState(imageIdDto, userDetails));
+            }
+        }
+
+        @Nested
+        @DisplayName("실패")
+        class Fail {
+
+            @Test
+            @DisplayName("해당 이미지가 없으면 예외를 반환한다.")
+            void notFoundImage() {
+                //given
+                CustomUserDetails userDetails = new CustomUserDetails(1L, Role.ROLE_USER);
+                ImageIdDto imageIdDto = ImageIdDto.builder().imageId(1L).build();
+
+                //when, then
+                assertThrows(NoSuchElementException.class, () -> imageApplicationService.changeBookmarkState(imageIdDto, userDetails));
             }
         }
     }
