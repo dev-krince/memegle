@@ -43,6 +43,7 @@ jobs:
         host: ${{ secrets.SSH_HOST }}
         username: krince
         key: ${{ secrets.SSH_PRIVATE_KEY }}
+        timeout: '60s'
         script: |
           cd /home/ubuntu
           sudo docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
